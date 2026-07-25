@@ -43,3 +43,5 @@ next-env.d.ts
 # PHP backend — never commit real database credentials or local test data
 backend/config.local.php
 backend/dev.sqlite
+backend/uploads/*
+!backend/uploads/.htaccess
