@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'host' => 'db5021008299.hosting-data.io',
+    'dbname' => 'dbs15939307',
+    'user' => 'dbu1761913',
+    'pass' => '8142667977@Aa',
+];

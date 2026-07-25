@@ -23,21 +23,19 @@ function handleImageUpload(string $fieldName): ?string
     }
 
     $allowed = [
-        'image/jpeg' => 'jpg',
-        'image/png' => 'png',
-        'image/webp' => 'webp',
-        'image/gif' => 'gif',
+        IMAGETYPE_JPEG => 'jpg',
+        IMAGETYPE_PNG => 'png',
+        IMAGETYPE_WEBP => 'webp',
+        IMAGETYPE_GIF => 'gif',
     ];
 
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mimeType = finfo_file($finfo, $file['tmp_name']);
-    finfo_close($finfo);
+    $imageInfo = @getimagesize($file['tmp_name']);
 
-    if (!isset($allowed[$mimeType])) {
+    if ($imageInfo === false || !isset($allowed[$imageInfo[2]])) {
         throw new RuntimeException('Only JPG, PNG, WEBP, or GIF images are allowed.');
     }
 
-    $extension = $allowed[$mimeType];
+    $extension = $allowed[$imageInfo[2]];
     $filename = bin2hex(random_bytes(8)) . '.' . $extension;
     $uploadsDir = __DIR__ . '/uploads';
 
