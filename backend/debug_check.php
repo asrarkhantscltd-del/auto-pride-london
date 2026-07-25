@@ -6,6 +6,14 @@ header('Content-Type: text/plain');
 echo "PHP version: " . phpversion() . "\n";
 echo "PDO drivers available: " . implode(', ', PDO::getAvailableDrivers()) . "\n\n";
 
+echo "Files in backend/:\n";
+foreach (scandir(__DIR__) as $f) {
+    if ($f !== '.' && $f !== '..') {
+        echo "  - {$f}\n";
+    }
+}
+echo "\n";
+
 try {
     require __DIR__ . '/config.php';
     $pdo = db();

@@ -1,6 +1,9 @@
 <?php
 $pageTitle = 'Car Form';
 require __DIR__ . '/_layout_top.php';
+require __DIR__ . '/../upload.php';
+
+$uploadError = null;
 
 $id = $_GET['id'] ?? null;
 $car = ['name' => '', 'year' => '', 'mileage' => '', 'price' => '', 'transmission' => 'Automatic', 'fuel_type' => 'Petrol', 'image' => '', 'status' => 'available'];
@@ -21,27 +24,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = (float) $_POST['price'];
     $transmission = trim($_POST['transmission']);
     $fuelType = trim($_POST['fuel_type']);
-    $image = trim($_POST['image']);
     $status = $_POST['status'] === 'sold' ? 'sold' : 'available';
 
-    if ($id) {
-        $stmt = db()->prepare('UPDATE cars SET name=?, year=?, mileage=?, price=?, transmission=?, fuel_type=?, image=?, status=? WHERE id=?');
-        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status, $id]);
-        $flash = 'Car updated.';
-    } else {
-        $stmt = db()->prepare('INSERT INTO cars (name, year, mileage, price, transmission, fuel_type, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status]);
-        $flash = 'Car added.';
-    }
+    try {
+        $uploadedImage = handleImageUpload('image');
+        $image = $uploadedImage ?? $car['image'];
 
-    header('Location: index.php?flash=' . urlencode($flash));
-    exit;
+        if (!$id && $uploadedImage === null) {
+            throw new RuntimeException('Please choose an image to upload.');
+        }
+
+        if ($id) {
+            $stmt = db()->prepare('UPDATE cars SET name=?, year=?, mileage=?, price=?, transmission=?, fuel_type=?, image=?, status=? WHERE id=?');
+            $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status, $id]);
+            $flash = 'Car updated.';
+        } else {
+            $stmt = db()->prepare('INSERT INTO cars (name, year, mileage, price, transmission, fuel_type, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status]);
+            $flash = 'Car added.';
+        }
+
+        header('Location: index.php?flash=' . urlencode($flash));
+        exit;
+    } catch (RuntimeException $e) {
+        $uploadError = $e->getMessage();
+        $car = array_merge($car, ['name' => $name, 'year' => $year, 'mileage' => $mileage, 'price' => $price, 'transmission' => $transmission, 'fuel_type' => $fuelType, 'status' => $status]);
+    }
 }
 ?>
 
 <h1><?= $id ? 'Edit Car' : 'Add Car' ?></h1>
 
-<form method="POST" class="card">
+<?php if ($uploadError): ?>
+    <div class="flash" style="background:#f8717122;border-color:#f8717155;color:#f87171;"><?= htmlspecialchars($uploadError) ?></div>
+<?php endif; ?>
+
+<form method="POST" class="card" enctype="multipart/form-data">
     <label>Name</label>
     <input type="text" name="name" value="<?= htmlspecialchars($car['name']) ?>" required>
 
@@ -68,8 +86,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endforeach; ?>
     </select>
 
-    <label>Image URL</label>
-    <input type="text" name="image" value="<?= htmlspecialchars($car['image']) ?>" required>
+    <label>Image</label>
+    <?php if (!empty($car['image'])): ?>
+        <img src="<?= htmlspecialchars($car['image']) ?>" alt="Current image" style="max-width:100%;max-height:150px;border-radius:8px;margin-bottom:0.5rem;display:block;">
+    <?php endif; ?>
+    <input type="file" name="image" accept="image/png,image/jpeg,image/webp,image/gif" <?= $id ? '' : 'required' ?>>
+    <?php if ($id): ?>
+        <small style="color:#666;display:block;margin-top:-0.75rem;margin-bottom:1rem;">Leave empty to keep the current image.</small>
+    <?php endif; ?>
 
     <label>Status</label>
     <select name="status">

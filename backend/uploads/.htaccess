@@ -1,0 +1,5 @@
+# Prevent any uploaded file from being executed as a script, even if
+# someone manages to upload something other than an image.
+<FilesMatch "\.(php|phtml|php\d|pl|py|cgi|asp|aspx|sh)$">
+    Require all denied
+</FilesMatch>
