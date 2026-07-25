@@ -15,8 +15,8 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-[#0F0F12]/90 backdrop-blur border-b border-white/10">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold text-white">
-          Auto Pride <span className="text-[#00FFCC]">London</span>
+        <Link href="/" className="flex items-center">
+          <img src="/logo.svg" alt="Auto Pride London" className="h-10 w-auto rounded" />
         </Link>
 
         <div className="flex gap-6">
