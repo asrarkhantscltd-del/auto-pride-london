@@ -37,7 +37,13 @@ if ($driver === 'sqlite') {
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )');
 } else {
-    $pdo->exec(file_get_contents(__DIR__ . '/schema.mysql.sql'));
+    $sql = file_get_contents(__DIR__ . '/schema.mysql.sql');
+    $statements = array_filter(array_map('trim', explode(';', $sql)));
+    foreach ($statements as $statement) {
+        if ($statement !== '' && stripos($statement, '--') !== 0) {
+            $pdo->exec($statement);
+        }
+    }
 }
 
 // Seed an admin user if none exists yet.
