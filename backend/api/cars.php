@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-$cars = db()->query('SELECT id, name, year, mileage, price, transmission, fuel_type AS fuelType, image FROM cars ORDER BY id DESC')->fetchAll();
+$cars = db()->query("SELECT id, name, year, mileage, price, transmission, fuel_type AS fuelType, image, status FROM cars ORDER BY (status = 'sold') ASC, id DESC")->fetchAll();
 
 foreach ($cars as &$car) {
     $car['year'] = (int) $car['year'];

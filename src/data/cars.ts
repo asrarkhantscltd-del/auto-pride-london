@@ -10,6 +10,7 @@ export const cars: Car[] = [
     price: 22995,
     transmission: "Automatic",
     fuelType: "Petrol",
+    status: "sold",
   },
   {
     id: 2,
@@ -60,6 +61,7 @@ export const cars: Car[] = [
     price: 11495,
     transmission: "Manual",
     fuelType: "Petrol",
+    status: "sold",
   },
   {
     id: 7,

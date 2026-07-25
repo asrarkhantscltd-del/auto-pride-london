@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS cars (
     transmission VARCHAR(50) NOT NULL,
     fuel_type VARCHAR(50) NOT NULL,
     image VARCHAR(500) NOT NULL,
+    status ENUM('available', 'sold') NOT NULL DEFAULT 'available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

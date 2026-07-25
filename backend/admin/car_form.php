@@ -3,7 +3,7 @@ $pageTitle = 'Car Form';
 require __DIR__ . '/_layout_top.php';
 
 $id = $_GET['id'] ?? null;
-$car = ['name' => '', 'year' => '', 'mileage' => '', 'price' => '', 'transmission' => 'Automatic', 'fuel_type' => 'Petrol', 'image' => ''];
+$car = ['name' => '', 'year' => '', 'mileage' => '', 'price' => '', 'transmission' => 'Automatic', 'fuel_type' => 'Petrol', 'image' => '', 'status' => 'available'];
 
 if ($id) {
     $stmt = db()->prepare('SELECT * FROM cars WHERE id = ?');
@@ -22,14 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $transmission = trim($_POST['transmission']);
     $fuelType = trim($_POST['fuel_type']);
     $image = trim($_POST['image']);
+    $status = $_POST['status'] === 'sold' ? 'sold' : 'available';
 
     if ($id) {
-        $stmt = db()->prepare('UPDATE cars SET name=?, year=?, mileage=?, price=?, transmission=?, fuel_type=?, image=? WHERE id=?');
-        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $id]);
+        $stmt = db()->prepare('UPDATE cars SET name=?, year=?, mileage=?, price=?, transmission=?, fuel_type=?, image=?, status=? WHERE id=?');
+        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status, $id]);
         $flash = 'Car updated.';
     } else {
-        $stmt = db()->prepare('INSERT INTO cars (name, year, mileage, price, transmission, fuel_type, image) VALUES (?, ?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image]);
+        $stmt = db()->prepare('INSERT INTO cars (name, year, mileage, price, transmission, fuel_type, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$name, $year, $mileage, $price, $transmission, $fuelType, $image, $status]);
         $flash = 'Car added.';
     }
 
@@ -69,6 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label>Image URL</label>
     <input type="text" name="image" value="<?= htmlspecialchars($car['image']) ?>" required>
+
+    <label>Status</label>
+    <select name="status">
+        <?php foreach (['available' => 'Available', 'sold' => 'Sold'] as $val => $label): ?>
+            <option value="<?= $val ?>" <?= $car['status'] === $val ? 'selected' : '' ?>><?= $label ?></option>
+        <?php endforeach; ?>
+    </select>
 
     <button type="submit" class="btn"><?= $id ? 'Save Changes' : 'Add Car' ?></button>
     <a href="index.php" class="btn btn-secondary" style="margin-left:0.5rem;">Cancel</a>

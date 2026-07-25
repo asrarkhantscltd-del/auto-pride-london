@@ -26,6 +26,12 @@ const cardVariants = {
 };
 
 export default function ShowroomGrid({ cars }: ShowroomGridProps) {
+  const sortedCars = [...cars].sort((a, b) => {
+    const aSold = a.status === "sold" ? 1 : 0;
+    const bSold = b.status === "sold" ? 1 : 0;
+    return aSold - bSold;
+  });
+
   return (
     <motion.div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-[#0F0F12]"
@@ -34,7 +40,7 @@ export default function ShowroomGrid({ cars }: ShowroomGridProps) {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
     >
-      {cars.map((car) => (
+      {sortedCars.map((car) => (
         <motion.div key={car.id} variants={cardVariants}>
           <CarCard car={car} />
         </motion.div>

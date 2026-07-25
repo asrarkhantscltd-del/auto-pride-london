@@ -25,6 +25,7 @@ if ($driver === 'sqlite') {
         transmission TEXT NOT NULL,
         fuel_type TEXT NOT NULL,
         image TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT \'available\',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )');
     $pdo->exec('CREATE TABLE IF NOT EXISTS products (

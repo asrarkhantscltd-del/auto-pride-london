@@ -11,6 +11,7 @@ export interface Car {
   price: number;
   transmission: string;
   fuelType: string;
+  status?: "available" | "sold";
 }
 
 interface CarCardProps {
@@ -18,22 +19,37 @@ interface CarCardProps {
 }
 
 export default function CarCard({ car }: CarCardProps) {
+  const isSold = car.status === "sold";
+
   return (
     <motion.div
-      className="rounded-2xl bg-[#18181C] overflow-hidden cursor-pointer"
-      whileHover={{
-        y: -8,
-        scale: 1.03,
-        boxShadow: "0 0 32px 4px rgba(0, 255, 204, 0.35)",
-      }}
+      className={`rounded-2xl bg-[#18181C] overflow-hidden cursor-pointer ${
+        isSold ? "opacity-60" : ""
+      }`}
+      whileHover={
+        isSold
+          ? {}
+          : {
+              y: -8,
+              scale: 1.03,
+              boxShadow: "0 0 32px 4px rgba(0, 255, 204, 0.35)",
+            }
+      }
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <div className="relative h-48 w-full bg-black/40">
         <img
           src={car.image}
           alt={car.name}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover ${
+            isSold ? "grayscale" : ""
+          }`}
         />
+        {isSold && (
+          <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full rotate-6 shadow-lg">
+            SOLD
+          </div>
+        )}
       </div>
 
       <div className="p-5">
