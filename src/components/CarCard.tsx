@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export interface Car {
   id: string | number;
@@ -22,6 +23,7 @@ export default function CarCard({ car }: CarCardProps) {
   const isSold = car.status === "sold";
 
   return (
+    <Link href={`/cars/detail/?id=${car.id}`} className="block">
     <motion.div
       className={`rounded-2xl bg-[#18181C] overflow-hidden cursor-pointer ${
         isSold ? "opacity-60" : ""
@@ -81,5 +83,6 @@ export default function CarCard({ car }: CarCardProps) {
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 }

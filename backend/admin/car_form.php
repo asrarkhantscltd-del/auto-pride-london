@@ -55,6 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h1><?= $id ? 'Edit Car' : 'Add Car' ?></h1>
 
+<?php if ($id): ?>
+    <p><a href="car_photos.php?car_id=<?= $id ?>" class="btn btn-secondary" style="display:inline-block;margin-bottom:1.5rem;">Manage Photos (inside/outside gallery)</a></p>
+<?php endif; ?>
+
 <?php if ($uploadError): ?>
     <div class="flash" style="background:#f8717122;border-color:#f8717155;color:#f87171;"><?= htmlspecialchars($uploadError) ?></div>
 <?php endif; ?>

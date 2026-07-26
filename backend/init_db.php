@@ -36,6 +36,13 @@ if ($driver === 'sqlite') {
         image TEXT NOT NULL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS car_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        car_id INTEGER NOT NULL,
+        image TEXT NOT NULL,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
     $pdo->exec('CREATE TABLE IF NOT EXISTS enquiries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,

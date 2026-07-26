@@ -51,3 +51,49 @@ function handleImageUpload(string $fieldName): ?string
 
     return '/backend/uploads/' . $filename;
 }
+
+/**
+ * Handles multiple uploaded image files (from a `name="field[]" multiple`
+ * input) and returns an array of public paths for the successfully saved
+ * ones. Files that fail validation are silently skipped rather than
+ * aborting the whole batch.
+ */
+function handleMultipleImageUploads(string $fieldName): array
+{
+    if (empty($_FILES[$fieldName]) || !is_array($_FILES[$fieldName]['name'])) {
+        return [];
+    }
+
+    $count = count($_FILES[$fieldName]['name']);
+    $saved = [];
+
+    for ($i = 0; $i < $count; $i++) {
+        if ($_FILES[$fieldName]['error'][$i] === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+
+        $singleFile = [
+            'name' => $_FILES[$fieldName]['name'][$i],
+            'type' => $_FILES[$fieldName]['type'][$i],
+            'tmp_name' => $_FILES[$fieldName]['tmp_name'][$i],
+            'error' => $_FILES[$fieldName]['error'][$i],
+            'size' => $_FILES[$fieldName]['size'][$i],
+        ];
+
+        $originalFiles = $_FILES[$fieldName];
+        $_FILES[$fieldName] = $singleFile;
+
+        try {
+            $path = handleImageUpload($fieldName);
+            if ($path !== null) {
+                $saved[] = $path;
+            }
+        } catch (RuntimeException $e) {
+            // Skip invalid files in a batch rather than failing the whole upload.
+        } finally {
+            $_FILES[$fieldName] = $originalFiles;
+        }
+    }
+
+    return $saved;
+}

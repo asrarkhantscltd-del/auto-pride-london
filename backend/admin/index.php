@@ -32,6 +32,7 @@ $products = db()->query('SELECT * FROM products ORDER BY id DESC')->fetchAll();
         </td>
         <td class="actions">
             <a href="car_form.php?id=<?= $car['id'] ?>">Edit</a>
+            <a href="car_photos.php?car_id=<?= $car['id'] ?>">Photos</a>
             <form class="inline" method="POST" action="car_toggle_status.php">
                 <input type="hidden" name="id" value="<?= $car['id'] ?>">
                 <a href="#" onclick="this.closest('form').requestSubmit(); return false;">
