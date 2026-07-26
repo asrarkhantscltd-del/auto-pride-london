@@ -40,6 +40,9 @@ requireAuth();
             <a href="product_form.php">Add Product</a>
             <a href="enquiries.php">Enquiries<?= $unreadCount > 0 ? ' <span style="background:#00FFCC;color:#000;border-radius:10px;padding:1px 7px;font-size:0.75rem;font-weight:bold;">' . $unreadCount . '</span>' : '' ?></a>
         </div>
-        <a class="logout" href="logout.php">Log Out</a>
+        <div>
+            <a href="settings.php">Account Settings</a>
+            <a class="logout" href="logout.php">Log Out</a>
+        </div>
     </header>
     <main>
