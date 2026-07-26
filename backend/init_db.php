@@ -52,6 +52,44 @@ if ($driver === 'sqlite') {
         is_read INTEGER NOT NULL DEFAULT 0,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS site_settings (
+        setting_key TEXT NOT NULL PRIMARY KEY,
+        setting_value TEXT,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS social_links (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        platform TEXT NOT NULL,
+        url TEXT NOT NULL,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS testimonials (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_name TEXT NOT NULL,
+        review_text TEXT NOT NULL,
+        rating INTEGER NOT NULL DEFAULT 5,
+        photo TEXT DEFAULT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS chatbot_faqs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        keywords TEXT DEFAULT NULL,
+        category TEXT DEFAULT \'General\',
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS feature_toggles (
+        feature_key TEXT NOT NULL PRIMARY KEY,
+        is_enabled INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
 } else {
     $sql = file_get_contents(__DIR__ . '/schema.mysql.sql');
     $statements = array_filter(array_map('trim', explode(';', $sql)));
@@ -108,6 +146,68 @@ if ($productCount === 0) {
     $stmt = $pdo->prepare('INSERT INTO products (name, category, price, image) VALUES (?, ?, ?, ?)');
     foreach ($products as $product) {
         $stmt->execute($product);
+    }
+}
+
+// Seed site_settings defaults (skip if any exist)
+$settingsCount = (int) $pdo->query('SELECT COUNT(*) AS c FROM site_settings')->fetch()['c'];
+if ($settingsCount === 0) {
+    $defaults = [
+        ['business_name', 'Auto Pride London'],
+        ['tagline', 'Premium Refurbished Cars & Accessories'],
+        ['phone', '+44 7771 406382'],
+        ['email', 'sales@autoprideldn.co.uk'],
+        ['address', 'Sunbury-on-Thames'],
+        ['hero_title', 'Auto Pride London'],
+        ['hero_subtitle', 'Find your perfect refurbished car or upgrade with our premium accessories'],
+        ['hero_background_image', ''],
+        ['hero_background_video', ''],
+        ['stats_cars_sold', '150'],
+        ['stats_happy_customers', '120'],
+        ['stats_years_in_business', '5'],
+        ['whatsapp_phone', '447771406382'],
+        ['whatsapp_message', 'Hi, I am interested in a car from Auto Pride London'],
+        ['whatsapp_enabled', '1'],
+        ['chatbot_enabled', '1'],
+        ['chatbot_greeting', 'Hi! How can I help you today? Ask me about our cars, services, or location.'],
+    ];
+    $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?)');
+    foreach ($defaults as $d) {
+        $stmt->execute($d);
+    }
+}
+
+// Seed feature toggles (skip if any exist)
+$toggleCount = (int) $pdo->query('SELECT COUNT(*) AS c FROM feature_toggles')->fetch()['c'];
+if ($toggleCount === 0) {
+    $toggles = [
+        ['hero_section', 1],
+        ['stats_section', 1],
+        ['testimonials_section', 1],
+        ['whatsapp_button', 1],
+        ['chatbot_widget', 1],
+        ['products_page', 1],
+        ['inquiry_form', 1],
+    ];
+    $stmt = $pdo->prepare('INSERT INTO feature_toggles (feature_key, is_enabled) VALUES (?, ?)');
+    foreach ($toggles as $t) {
+        $stmt->execute($t);
+    }
+}
+
+// Seed chatbot FAQs (skip if any exist)
+$faqCount = (int) $pdo->query('SELECT COUNT(*) AS c FROM chatbot_faqs')->fetch()['c'];
+if ($faqCount === 0) {
+    $faqs = [
+        ['What cars do you have available?', 'We have a range of quality refurbished cars. Visit our Cars page to see the full inventory, or contact us for specific requirements.', 'cars,available,stock,inventory,vehicles,what,have', 'Cars', 1],
+        ['Where are you located?', 'We are based in Sunbury-on-Thames, easily accessible from London and surrounding areas.', 'where,location,located,address,directions,find,visit', 'Location', 2],
+        ['Do you offer finance?', 'Please contact us directly to discuss financing options for your chosen vehicle.', 'finance,financing,payment,monthly,installment,loan,credit', 'Finance', 3],
+        ['How can I contact you?', 'Call us at +44 7771 406382, email sales@autoprideldn.co.uk, or use the enquiry form on our website. We also respond on WhatsApp!', 'contact,phone,call,email,reach,touch,whatsapp', 'Contact', 4],
+        ['Do you deliver cars?', 'Delivery options may be available depending on your location. Please get in touch to discuss.', 'deliver,delivery,transport,ship,shipping,bring,collect', 'Delivery', 5],
+    ];
+    $stmt = $pdo->prepare('INSERT INTO chatbot_faqs (question, answer, keywords, category, sort_order) VALUES (?, ?, ?, ?, ?)');
+    foreach ($faqs as $faq) {
+        $stmt->execute($faq);
     }
 }
 
