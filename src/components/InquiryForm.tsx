@@ -26,14 +26,14 @@ const contactMethods = [
     icon: Phone,
     title: "Call Us",
     description: "Speak to our sales team",
-    value: "+44 20 7946 0958",
-    link: "tel:+442079460958",
+    value: "+44 7771 406382",
+    link: "tel:+447771406382",
   },
   {
     icon: MapPin,
-    title: "Visit the Showroom",
+    title: "Visit Us",
     description: "See the cars in person",
-    value: "Park Royal, London",
+    value: "Sunbury-on-Thames",
     link: "#",
   },
 ];
@@ -55,6 +55,7 @@ export default function InquiryForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -91,9 +92,28 @@ export default function InquiryForm() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("/backend/api/enquiries.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || "Something went wrong. Please try again.");
+      }
+
+      setIsSubmitted(true);
+    } catch {
+      setSubmitError(
+        "Couldn't send your enquiry right now. Please try again or call us directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fadeInUp = {
@@ -217,6 +237,10 @@ export default function InquiryForm() {
                       </p>
                     )}
                   </div>
+
+                  {submitError && (
+                    <p className="text-red-400 text-sm">{submitError}</p>
+                  )}
 
                   <motion.button
                     type="submit"

@@ -36,6 +36,15 @@ if ($driver === 'sqlite') {
         image TEXT NOT NULL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS enquiries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        car_interest TEXT,
+        message TEXT NOT NULL,
+        is_read INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
 } else {
     $sql = file_get_contents(__DIR__ . '/schema.mysql.sql');
     $statements = array_filter(array_map('trim', explode(';', $sql)));

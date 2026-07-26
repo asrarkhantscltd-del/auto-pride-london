@@ -3,14 +3,14 @@ import { Product } from "@/components/ProductCard";
 export const products: Product[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1621007806737-b90c29c3d3ad?w=600",
+    image: "https://images.unsplash.com/photo-1570475433067-adbaa402f76d?w=600",
     name: "All-Weather Floor Mats",
     category: "Car Mats",
     price: 34.99,
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1595124790696-2f676dbe1f4e?w=600",
+    image: "https://images.unsplash.com/photo-1743529208000-fd6bad4635dc?w=600",
     name: "Premium Luxury Car Perfume",
     category: "Car Perfume",
     price: 12.99,

@@ -31,12 +31,14 @@ requireAuth();
     </style>
 </head>
 <body>
+    <?php $unreadCount = (int) db()->query('SELECT COUNT(*) AS c FROM enquiries WHERE is_read = 0')->fetch()['c']; ?>
     <header>
         <div>
             <a class="brand" href="index.php">Auto Pride London</a>
             <a href="index.php">Dashboard</a>
             <a href="car_form.php">Add Car</a>
             <a href="product_form.php">Add Product</a>
+            <a href="enquiries.php">Enquiries<?= $unreadCount > 0 ? ' <span style="background:#00FFCC;color:#000;border-radius:10px;padding:1px 7px;font-size:0.75rem;font-weight:bold;">' . $unreadCount . '</span>' : '' ?></a>
         </div>
         <a class="logout" href="logout.php">Log Out</a>
     </header>
