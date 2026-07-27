@@ -22,6 +22,17 @@ $name = trim($input['name'] ?? '');
 $email = trim($input['email'] ?? '');
 $carInterest = trim($input['carInterest'] ?? '');
 $message = trim($input['message'] ?? '');
+$honeypot = trim($input['website'] ?? '');
+$renderedAt = (int) ($input['renderedAt'] ?? 0);
+
+// Bots either fill the hidden honeypot field or submit faster than a human
+// could read and complete the form. Pretend success so they don't learn
+// to adapt, but skip the database write.
+$submittedTooFast = $renderedAt > 0 && (microtime(true) * 1000 - $renderedAt) < 2000;
+if ($honeypot !== '' || $submittedTooFast) {
+    echo json_encode(['success' => true]);
+    exit;
+}
 
 if ($name === '' || $email === '' || $message === '') {
     http_response_code(422);
@@ -32,6 +43,20 @@ if ($name === '' || $email === '' || $message === '') {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(422);
     echo json_encode(['error' => 'Please provide a valid email address.']);
+    exit;
+}
+
+$driver = db()->getAttribute(PDO::ATTR_DRIVER_NAME);
+$cutoffSql = $driver === 'mysql'
+    ? 'NOW() - INTERVAL 10 MINUTE'
+    : "datetime('now', '-10 minutes')";
+$stmt = db()->prepare("SELECT COUNT(*) AS c FROM enquiries WHERE email = ? AND created_at > ({$cutoffSql})");
+$stmt->execute([$email]);
+$recentCount = (int) $stmt->fetch()['c'];
+
+if ($recentCount >= 3) {
+    http_response_code(429);
+    echo json_encode(['error' => 'Too many enquiries from this email recently. Please try again later.']);
     exit;
 }
 

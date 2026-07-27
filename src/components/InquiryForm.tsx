@@ -52,6 +52,8 @@ export default function InquiryForm() {
     carInterest: "",
     message: "",
   });
+  const [website, setWebsite] = useState("");
+  const [renderedAt] = useState(() => Date.now());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -98,7 +100,11 @@ export default function InquiryForm() {
       const response = await fetch("/backend/api/enquiries.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          website,
+          renderedAt,
+        }),
       });
 
       if (!response.ok) {
@@ -163,6 +169,23 @@ export default function InquiryForm() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
+                  <input
+                    type="text"
+                    name="website"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      width: "1px",
+                      height: "1px",
+                      opacity: 0,
+                    }}
+                  />
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />

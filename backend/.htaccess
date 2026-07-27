@@ -1,0 +1,5 @@
+# Block direct access to database dumps, docs, and other non-runtime files
+# that should never be served as plain text.
+<FilesMatch "\.(sql|sqlite|md|log|env|bak|backup|gitignore)$">
+    Require all denied
+</FilesMatch>
