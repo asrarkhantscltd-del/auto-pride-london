@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $fields = [
         'business_name', 'tagline', 'phone', 'email', 'address',
-        'hero_title', 'hero_subtitle', 'hero_background_video',
+        'hero_title', 'hero_subtitle',
         'stats_cars_sold', 'stats_happy_customers', 'stats_years_in_business',
     ];
 
