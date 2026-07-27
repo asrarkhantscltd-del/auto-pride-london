@@ -58,6 +58,46 @@ function handleImageUpload(string $fieldName): ?string
  * ones. Files that fail validation are silently skipped rather than
  * aborting the whole batch.
  */
+function handleVideoUpload(string $fieldName): ?string
+{
+    if (empty($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    $file = $_FILES[$fieldName];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload failed (error code ' . $file['error'] . ').');
+    }
+
+    $maxBytes = 50 * 1024 * 1024; // 50 MB
+    if ($file['size'] > $maxBytes) {
+        throw new RuntimeException('Video is too large (max 50 MB).');
+    }
+
+    $allowedExts = ['mp4' => true, 'webm' => true, 'mov' => true];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!isset($allowedExts[$ext])) {
+        throw new RuntimeException('Only MP4, WEBM, or MOV videos are allowed.');
+    }
+
+    $filename = bin2hex(random_bytes(8)) . '.' . $ext;
+    $uploadsDir = __DIR__ . '/uploads';
+
+    if (!is_dir($uploadsDir)) {
+        mkdir($uploadsDir, 0755, true);
+    }
+
+    $destination = $uploadsDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new RuntimeException('Could not save the uploaded file.');
+    }
+
+    return '/backend/uploads/' . $filename;
+}
+
 function handleMultipleImageUploads(string $fieldName): array
 {
     if (empty($_FILES[$fieldName]) || !is_array($_FILES[$fieldName]['name'])) {

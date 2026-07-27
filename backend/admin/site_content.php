@@ -31,6 +31,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$error) {
+        try {
+            $heroVideo = handleVideoUpload('hero_background_video');
+            if ($heroVideo !== null) {
+                setSetting('hero_background_video', $heroVideo);
+            }
+        } catch (RuntimeException $e) {
+            $error = 'Hero video: ' . $e->getMessage();
+        }
+    }
+
+    if (!$error) {
         $success = 'Site content updated successfully.';
     }
 }
@@ -107,9 +118,12 @@ $s = getAllSettings();
                 <?php endif; ?>
             </div>
             <div class="form-group">
-                <label>Hero Background Video URL</label>
-                <input type="url" name="hero_background_video" value="<?= htmlspecialchars($s['hero_background_video'] ?? '') ?>" placeholder="https://example.com/video.mp4">
-                <div class="form-hint">Optional. If set, video plays behind the hero text. Leave blank for image-only.</div>
+                <label>Hero Background Video (MP4, WEBM, MOV — max 50 MB)</label>
+                <input type="file" name="hero_background_video" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov">
+                <?php if (!empty($s['hero_background_video'])): ?>
+                    <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent);">Current: <?= htmlspecialchars(basename($s['hero_background_video'])) ?></div>
+                <?php endif; ?>
+                <div class="form-hint">Optional. Video plays behind the hero text. Leave empty to keep image-only.</div>
             </div>
         </div>
     </div>
