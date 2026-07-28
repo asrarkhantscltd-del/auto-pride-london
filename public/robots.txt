@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /backend/
+
+Sitemap: https://autopridelondon.com/sitemap.xml
