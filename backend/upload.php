@@ -17,11 +17,6 @@ function handleImageUpload(string $fieldName): ?string
         throw new RuntimeException('Upload failed (error code ' . $file['error'] . ').');
     }
 
-    $maxBytes = 5 * 1024 * 1024; // 5 MB
-    if ($file['size'] > $maxBytes) {
-        throw new RuntimeException('Image is too large (max 5 MB).');
-    }
-
     $allowed = [
         IMAGETYPE_JPEG => 'jpg',
         IMAGETYPE_PNG => 'png',
@@ -68,11 +63,6 @@ function handleVideoUpload(string $fieldName): ?string
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Upload failed (error code ' . $file['error'] . ').');
-    }
-
-    $maxBytes = 50 * 1024 * 1024; // 50 MB
-    if ($file['size'] > $maxBytes) {
-        throw new RuntimeException('Video is too large (max 50 MB).');
     }
 
     $allowedExts = ['mp4' => true, 'webm' => true, 'mov' => true];

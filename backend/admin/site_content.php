@@ -118,7 +118,7 @@ $s = getAllSettings();
                 <?php endif; ?>
             </div>
             <div class="form-group">
-                <label>Hero Background Video (MP4, WEBM, MOV — max 50 MB)</label>
+                <label>Hero Background Video (MP4, WEBM, MOV)</label>
                 <input type="file" name="hero_background_video" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov">
                 <?php if (!empty($s['hero_background_video'])): ?>
                     <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent);">Current: <?= htmlspecialchars(basename($s['hero_background_video'])) ?></div>
