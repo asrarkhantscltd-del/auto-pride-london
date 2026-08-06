@@ -45,3 +45,8 @@ backend/config.local.php
 backend/dev.sqlite
 backend/uploads/*
 !backend/uploads/.htaccess
+
+# Claude AI files
+CLAUDE.md
+AGENTS.md
+.claude/
